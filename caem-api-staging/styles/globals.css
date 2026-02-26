@@ -1,0 +1,140 @@
+/* styles/globals.css */
+:root{
+  --bg:#f5f7fa;
+  --card:#fff;
+  --muted:#6b7280;
+  --accent:#0f62fe;
+  --success:#0b8457;
+  --danger:#c92a2a;
+  --border:#e6e9ee;
+  --shadow: 0 6px 18px rgba(15,22,39,0.06);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+html,body,#__next {
+  height:100%;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:#0f172a;
+  -webkit-font-smoothing:antialiased;
+}
+
+.app-shell{
+  max-width:1200px;
+  margin:28px auto;
+  padding:28px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  margin-bottom:18px;
+}
+.h-title{
+  font-size:20px;
+  font-weight:700;
+}
+.h-sub{
+  color:var(--muted);
+  font-size:13px;
+}
+
+/* Card */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px;
+  box-shadow:var(--shadow);
+}
+
+/* Form */
+.input{
+  padding:10px 12px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  outline:none;
+  width:320px;
+}
+.btn{
+  background:var(--accent);
+  color:white;
+  padding:10px 14px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+}
+.btn.secondary{
+  background:transparent;
+  color:var(--accent);
+  border:1px solid var(--accent);
+}
+.field-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+/* Table */
+.table{
+  width:100%;
+  border-collapse:collapse;
+}
+.table th{
+  text-align:left;
+  padding:12px 10px;
+  color:var(--muted);
+  font-size:13px;
+  border-bottom:1px solid var(--border);
+}
+.table td{
+  padding:10px;
+  border-bottom:1px dashed var(--border);
+  vertical-align:top;
+  font-size:14px;
+}
+.row-clickable:hover{
+  background:#fbfdff;
+  cursor:pointer;
+}
+
+/* Selection */
+.controls{
+  display:flex;
+  gap:10px;
+  margin:12px 0;
+  align-items:center;
+}
+
+/* Viewer */
+.viewer {
+  margin-top:20px;
+}
+.case-card{
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px;
+  margin-bottom:12px;
+  background:#fff;
+}
+.case-header{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+}
+.kv-table { width:100%; }
+.kv-table td { padding:6px 8px; border-bottom:1px dashed #f0f0f0; font-size:14px; color:#0f172a; }
+.kv-key { color:var(--muted); width:200px; font-weight:600; font-size:13px; }
+.small { font-size:13px; color:var(--muted); }
+.toggle-btn { background:transparent; border:none; cursor:pointer; color:var(--accent); }
+.empty {
+  text-align:center;
+  color:var(--muted);
+  padding:20px;
+}
