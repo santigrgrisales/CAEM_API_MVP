@@ -18,18 +18,18 @@ router.get('/', async (req, res) => {
     const fecha_hasta = req.query.fecha_hasta || null;
 
     // Build query dynamically but parameterized
-    let q = `
-      SELECT
-        case_id,
-        tipo_id_demandado,
-        id_demandado,
-        tipo_orden,
-        fecha_recepcion,
-        entidad_remitente
-      FROM procesos_banco
-      WHERE entidad_bancaria_id = $1
-      AND estado_logico = 'ACTIVO'
-    `;
+   let q = `
+  SELECT
+    case_id,
+    tipo_id_demandado,
+    id_demandado,
+    titulo_orden AS tipo_orden,
+    fecha_recepcion,
+    nombre_demandante AS demandante
+  FROM procesos_banco
+  WHERE entidad_bancaria_id = $1
+  AND estado_logico = 'ACTIVO'
+`;
     const params = [bankId];
 
     if (fecha_desde) {

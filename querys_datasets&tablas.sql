@@ -134,10 +134,11 @@ CREATE TABLE banks (
 
 --inserts de prueba
 INSERT INTO banks (code, name, api_key) VALUES
-  (2, 'BANCO_2', 'test_key_bancox_2'),
-  (3, 'BANCO_3', 'test_key_bancoy_3'),
+  (1, 'BANCO_1', 'test_key_bancox_1'),
+  (2, 'BANCO_2', 'test_key_bancoy_2'),
+  (3, 'BANCO_3', 'test_key_bancoy_3');
   (4, 'BANCO_4', 'test_key_bancoy_4');
-
+  (5, 'BANCO_5', 'test_key_bancoy_5');
 
 UPDATE procesos_banco p
 SET entidad_bancaria_id = b.id,

@@ -1,33 +1,21 @@
-// components/CaseDetailViewer.js
 "use client";
 
 import { useState } from "react";
 
-/**
- * Props:
- * - results: array of { case_id, proceso, demandado, demandante, remitente }
- */
 export default function CaseDetailViewer({ results = [] }) {
-  const [open, setOpen] = useState({}); // map case_id -> boolean
+  const [activeTabMap, setActiveTabMap] = useState({}); // Mapa para saber qué tab está activo por caso
 
-  if (!results || results.length === 0) {
-    return <div className="card"><div className="empty">No hay detalles para mostrar. Selecciona registros y haz "Consultar seleccionados".</div></div>;
-  }
-
-  const toggle = (caseId) => {
-    setOpen(prev => ({ ...prev, [caseId]: !prev[caseId] }));
-  };
+  if (!results || results.length === 0) return null;
 
   const renderKV = (obj) => {
-    if (!obj) return <div className="small">-</div>;
-    const entries = Object.entries(obj);
+    if (!obj || Object.keys(obj).length === 0) return <div className="small">Información no disponible</div>;
     return (
       <table className="kv-table">
         <tbody>
-          {entries.map(([k,v]) => (
+          {Object.entries(obj).map(([k, v]) => (
             <tr key={k}>
-              <td className="kv-key">{k}</td>
-              <td>{v === null || v === undefined ? '-' : String(v)}</td>
+              <td className="kv-key">{k.replace(/_/g, " ").toUpperCase()}</td>
+              <td>{v === null || v === undefined || v === "" ? '-' : String(v)}</td>
             </tr>
           ))}
         </tbody>
@@ -35,45 +23,45 @@ export default function CaseDetailViewer({ results = [] }) {
     );
   };
 
+  const getActiveTab = (cid) => activeTabMap[cid] || "proceso";
+  const setActiveTab = (cid, tab) => setActiveTabMap(prev => ({ ...prev, [cid]: tab }));
+
   return (
-    <div className="viewer">
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
       {results.map(r => {
         const cid = r.case_id;
+        const currentTab = getActiveTab(cid);
+
         return (
-          <div key={cid} className="case-card">
-            <div className="case-header">
+          <div key={cid} style={{ border: "1px solid var(--border)", borderRadius: "8px", overflow: "hidden" }}>
+            <div style={{ background: "var(--row-hover)", padding: "16px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div>
-                <div style={{ fontWeight:700 }}>{cid}</div>
-                <div className="small">Resumen: {r.proceso?.titulo_embargo || r.proceso?.titulo_orden || '-'}</div>
+                <h4 style={{ margin: 0, fontSize: "16px", color: "var(--accent)" }}>Expediente #{cid}</h4>
               </div>
-              <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-                <button className="toggle-btn" onClick={() => toggle(cid)}>{open[cid] ? "Contraer" : "Expandir"}</button>
-              </div>
+              <button 
+                className="btn secondary" 
+                style={{ padding: "6px 12px", fontSize: "12px" }}
+                onClick={() => { navigator.clipboard?.writeText(JSON.stringify(r, null, 2)); alert("JSON Copiado"); }}
+              >
+                Copiar JSON
+              </button>
             </div>
 
-            {open[cid] && (
-              <div style={{ marginTop:12 }}>
-                <details open style={{ marginBottom:10 }}><summary style={{ fontWeight:700 }}>1. Identificación del proceso</summary>
-                  <div style={{ marginTop:8 }}>{renderKV(r.proceso)}</div>
-                </details>
-
-                <details style={{ marginBottom:10 }}><summary style={{ fontWeight:700 }}>2. Demandado</summary>
-                  <div style={{ marginTop:8 }}>{renderKV(r.demandado)}</div>
-                </details>
-
-                <details style={{ marginBottom:10 }}><summary style={{ fontWeight:700 }}>3. Demandante</summary>
-                  <div style={{ marginTop:8 }}>{renderKV(r.demandante)}</div>
-                </details>
-
-                <details style={{ marginBottom:10 }}><summary style={{ fontWeight:700 }}>4. Remitente</summary>
-                  <div style={{ marginTop:8 }}>{renderKV(r.remitente)}</div>
-                </details>
-
-                <div style={{ marginTop:10 }}>
-                  <button className="btn secondary" onClick={() => { navigator.clipboard?.writeText(JSON.stringify(r, null, 2)); alert("Copiado JSON del caso"); }}>Copiar JSON</button>
-                </div>
+            <div style={{ padding: "16px" }}>
+              <div className="tabs-header">
+                <button className={`tab-btn ${currentTab === 'proceso' ? 'active' : ''}`} onClick={() => setActiveTab(cid, 'proceso')}>Proceso</button>
+                <button className={`tab-btn ${currentTab === 'demandado' ? 'active' : ''}`} onClick={() => setActiveTab(cid, 'demandado')}>Demandado</button>
+                <button className={`tab-btn ${currentTab === 'demandante' ? 'active' : ''}`} onClick={() => setActiveTab(cid, 'demandante')}>Demandante</button>
+                <button className={`tab-btn ${currentTab === 'remitente' ? 'active' : ''}`} onClick={() => setActiveTab(cid, 'remitente')}>Remitente</button>
               </div>
-            )}
+
+              <div>
+                {currentTab === 'proceso' && renderKV(r.proceso)}
+                {currentTab === 'demandado' && renderKV(r.demandado)}
+                {currentTab === 'demandante' && renderKV(r.demandante)}
+                {currentTab === 'remitente' && renderKV(r.remitente)}
+              </div>
+            </div>
           </div>
         );
       })}

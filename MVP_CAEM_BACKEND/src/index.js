@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const app = express();
-const db = require('../config/db'); // tu módulo DB (pool)
+const db = require('../config/db'); 
 const authenticate = require('../middleware/auth');
 
 

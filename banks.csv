@@ -1,0 +1,4 @@
+"id","code","name","api_key","is_active"
+1,2,"BANCO_2","test_key_bancox_2",True
+2,3,"BANCO_3","test_key_bancoy_3",True
+3,4,"BANCO_4","test_key_bancoy_4",True

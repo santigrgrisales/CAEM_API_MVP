@@ -1,140 +1,119 @@
 /* styles/globals.css */
-:root{
-  --bg:#f5f7fa;
-  --card:#fff;
-  --muted:#6b7280;
-  --accent:#0f62fe;
-  --success:#0b8457;
-  --danger:#c92a2a;
-  --border:#e6e9ee;
-  --shadow: 0 6px 18px rgba(15,22,39,0.06);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+@import "tailwindcss";
+
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --muted: #64748b;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --success: #059669;
+  --danger: #dc2626;
+  --border: #e2e8f0;
+  --row-hover: #f1f5f9;
+  --row-selected: #eff6ff;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-html,body,#__next {
-  height:100%;
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
 }
 
-body{
-  margin:0;
-  background:var(--bg);
-  color:#0f172a;
-  -webkit-font-smoothing:antialiased;
+.app-shell {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.app-shell{
-  max-width:1200px;
-  margin:28px auto;
-  padding:28px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
 }
 
-.header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  margin-bottom:18px;
-}
-.h-title{
-  font-size:20px;
-  font-weight:700;
-}
-.h-sub{
-  color:var(--muted);
-  font-size:13px;
+.h-title { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+.h-sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+/* Layout de Pantalla Dividida */
+.dashboard-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  flex: 1;
+  min-height: 0; /* Permite scroll interno */
 }
 
-/* Card */
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:16px;
-  box-shadow:var(--shadow);
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Contiene el scroll interno */
 }
 
-/* Form */
-.input{
-  padding:10px 12px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  outline:none;
-  width:320px;
+.panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
 }
-.btn{
-  background:var(--accent);
-  color:white;
-  padding:10px 14px;
-  border-radius:8px;
-  border:none;
-  cursor:pointer;
+
+/* Form & Buttons */
+.input {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s;
 }
-.btn.secondary{
-  background:transparent;
-  color:var(--accent);
-  border:1px solid var(--accent);
+.input:focus { border-color: var(--accent); }
+
+.btn {
+  background: var(--accent);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
-.field-row{
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
+.btn:hover:not(:disabled) { background: var(--accent-hover); transform: translateY(-1px); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn.secondary { background: transparent; color: var(--accent); border: 1px solid var(--border); }
+.btn.secondary:hover:not(:disabled) { border-color: var(--accent); background: var(--row-selected); }
 
 /* Table */
-.table{
-  width:100%;
-  border-collapse:collapse;
-}
-.table th{
-  text-align:left;
-  padding:12px 10px;
-  color:var(--muted);
-  font-size:13px;
-  border-bottom:1px solid var(--border);
-}
-.table td{
-  padding:10px;
-  border-bottom:1px dashed var(--border);
-  vertical-align:top;
-  font-size:14px;
-}
-.row-clickable:hover{
-  background:#fbfdff;
-  cursor:pointer;
-}
+.table { width: 100%; border-collapse: collapse; text-align: left; }
+.table th { padding: 12px; color: var(--muted); font-size: 13px; font-weight: 600; border-bottom: 2px solid var(--border); position: sticky; top: 0; background: var(--card); z-index: 10;}
+.table td { padding: 12px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: middle; }
+.row-clickable { transition: background 0.15s ease; cursor: pointer; }
+.row-clickable:hover { background: var(--row-hover); }
+.row-clickable.selected { background: var(--row-selected); border-left: 3px solid var(--accent); }
 
-/* Selection */
-.controls{
-  display:flex;
-  gap:10px;
-  margin:12px 0;
-  align-items:center;
-}
+/* Tabs System */
+.tabs-header { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 16px; gap: 16px; overflow-x: auto; }
+.tab-btn { background: none; border: none; padding: 8px 4px; color: var(--muted); font-weight: 500; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.tab-btn:hover { color: var(--accent); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* Viewer */
-.viewer {
-  margin-top:20px;
-}
-.case-card{
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:12px;
-  margin-bottom:12px;
-  background:#fff;
-}
-.case-header{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  align-items:center;
-}
-.kv-table { width:100%; }
-.kv-table td { padding:6px 8px; border-bottom:1px dashed #f0f0f0; font-size:14px; color:#0f172a; }
-.kv-key { color:var(--muted); width:200px; font-weight:600; font-size:13px; }
-.small { font-size:13px; color:var(--muted); }
-.toggle-btn { background:transparent; border:none; cursor:pointer; color:var(--accent); }
-.empty {
-  text-align:center;
-  color:var(--muted);
-  padding:20px;
-}
+/* Utilities */
+.small { font-size: 13px; color: var(--muted); }
+.empty { text-align: center; color: var(--muted); padding: 40px 20px; font-style: italic; }
+.kv-table { width: 100%; border-collapse: collapse; }
+.kv-table td { padding: 8px; border-bottom: 1px solid var(--border); font-size: 14px; }
+.kv-key { font-weight: 600; color: var(--muted); width: 40%; }

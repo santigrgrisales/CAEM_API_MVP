@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
         <div className="app-shell">
           <header className="header">
             <div>
-              <div className="h-title">Bank API — Staging</div>
+              <div className="h-title">CAEM API — MVP</div>
               <div className="h-sub">Demo MVP — Screening y Batch Case Details</div>
             </div>
           </header>

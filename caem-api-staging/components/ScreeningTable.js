@@ -1,57 +1,71 @@
-// components/ScreeningTable.js
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
-/**
- * Props:
- * - data: array rows [{ case_id, tipo_id_demandado, id_demandado, tipo_orden, fecha_recepcion, entidad_remitente }]
- * - selected: Set or array of selected ids
- * - onToggle(id)
- * - onToggleAll()
- */
-export default function ScreeningTable({ data = [], selected = new Set(), onToggle, onToggleAll }) {
-  const allSelected = data.length > 0 && data.every(r => selected.has(String(r.case_id)));
+export default function ScreeningTable({ data = [], selected = new Set(), onToggle, onToggleAll, loading }) {
+  const [searchTerm, setSearchTerm] = useState("");
+
+  // Lógica del buscador front-end
+  const filteredData = data.filter(row => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      String(row.case_id).toLowerCase().includes(searchLower) ||
+      String(row.id_demandado || "").toLowerCase().includes(searchLower) ||
+      String(row.entidad_remitente || "").toLowerCase().includes(searchLower)
+    );
+  });
+
+  const allSelected = filteredData.length > 0 && filteredData.every(r => selected.has(String(r.case_id)));
+
+  if (loading && data.length === 0) return <div className="empty">Cargando registros...</div>;
 
   return (
-    <div className="card">
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:8 }}>
-        <div><strong>Oficios dirigidos</strong> <span className="small">({data.length})</span></div>
-        <div className="small">Click en fila para ver detalles individuales (opcional)</div>
-      </div>
+    <div>
+      <input 
+        type="text" 
+        className="input" 
+        placeholder="Buscar por Case ID, Demandado o Entidad..." 
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: "16px" }}
+      />
 
       <table className="table">
         <thead>
           <tr>
-            <th style={{ width:40 }}>
-              <input type="checkbox" checked={allSelected} onChange={onToggleAll} aria-label="select all" />
+            <th style={{ width: 40 }}>
+              <input type="checkbox" checked={allSelected} onChange={() => onToggleAll(filteredData)} />
             </th>
             <th>Case ID</th>
-            <th>Tipo ID</th>
             <th>ID Demandado</th>
+            <th>Tipo ID Demandado</th>
             <th>Tipo Orden</th>
-            <th>Fecha recepción</th>
-            <th>Entidad remitente</th>
+            <th>Fecha Recepción</th>
+            <th>Demandante</th>
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 && (
-            <tr><td colSpan="7" className="empty">No hay registros</td></tr>
+          {filteredData.length === 0 && (
+            <tr><td colSpan="5" className="empty">No se encontraron resultados</td></tr>
           )}
-          {data.map(row => {
+          {filteredData.map(row => {
             const id = String(row.case_id);
-            const checked = selected.has(id);
+            const isSelected = selected.has(id);
             return (
-              <tr key={id} className="row-clickable">
-                <td>
-                  <input type="checkbox" checked={checked} onChange={() => onToggle(id)} />
+              <tr 
+                key={id} 
+                className={`row-clickable ${isSelected ? 'selected' : ''}`}
+                onClick={() => onToggle(id)}
+              >
+                <td onClick={(e) => e.stopPropagation()}>
+                  <input type="checkbox" checked={isSelected} onChange={() => onToggle(id)} />
                 </td>
-                <td>{row.case_id}</td>
-                <td>{row.tipo_id_demandado || '-'}</td>
+                <td style={{ fontWeight: 500 }}>{row.case_id}</td>
                 <td>{row.id_demandado || '-'}</td>
+                <td>{row.tipo_id_demandado || '-'}</td>
                 <td>{row.tipo_orden || '-'}</td>
                 <td>{row.fecha_recepcion || '-'}</td>
-                <td>{row.entidad_remitente || '-'}</td>
+                <td>{row.demandante || '-'}</td>
               </tr>
             );
           })}
