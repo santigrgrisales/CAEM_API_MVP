@@ -134,6 +134,10 @@ WHERE e.deleted = FALSE
 ON CONFLICT (fingerprint) DO NOTHING;
 
 
+--agregacion campo ciudad
 
+alter table procesos_banco add column ciudad text;
+
+update procesos_banco pb set ciudad = e.ciudad from embargos e where pb.embargo_id = e.id;
 
 
