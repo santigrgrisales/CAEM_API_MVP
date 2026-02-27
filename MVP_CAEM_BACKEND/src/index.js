@@ -8,11 +8,12 @@ const authenticate = require('../middleware/auth');
 
 
 app.use(cors({
-  origin: 'http://localhost:3001', // frontend
+  origin: process.env.NODE_ENV === 'production'
+    ? true
+    : 'http://localhost:3001',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type', 'x-api-key', 'Authorization']
 }));
-
 
 
 // Middleware
