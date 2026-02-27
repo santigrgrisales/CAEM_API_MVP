@@ -1,0 +1,124 @@
+{
+	"info": {
+		"_postman_id": "7f8b9e6c-4c2d-48a5-9273-5a0279d0ab5f",
+		"name": "CAEM API MVP",
+		"description": "Colección de pruebas para el MVP de la API CAEM. Incluye flujos de Screening y Detalle Batch para entidades bancarias.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item":[
+		{
+			"name": "1. Screening de Oficios",
+			"request": {
+				"method": "GET",
+				"header":[
+					{
+						"key": "x-api-key",
+						"value": "{{api_key}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/screening?limit=100&offset=0",
+					"host":[
+						"{{base_url}}"
+					],
+					"path":[
+						"api",
+						"screening"
+					],
+					"query":[
+						{
+							"key": "limit",
+							"value": "100",
+							"description": "Límite de registros"
+						},
+						{
+							"key": "offset",
+							"value": "0",
+							"description": "Paginación"
+						},
+						{
+							"key": "fecha_desde",
+							"value": "2023-01-01",
+							"disabled": true
+						},
+						{
+							"key": "fecha_hasta",
+							"value": "2023-05-30",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Consulta el listado general de oficios dirigidos a la entidad bancaria."
+			},
+			"response":[]
+		},
+		{
+			"name": "2. Detalle Batch de Casos",
+			"request": {
+				"method": "POST",
+				"header":[
+					{
+						"key": "x-api-key",
+						"value": "{{api_key}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"case_ids\":[\n    \"4f67b712-96a7-4611-9bc2-e8b6f1c69fd5\",\n    \"58f7fe3c-d736-4d97-9999-911d33cebe25\"\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/cases/batch",
+					"host": [
+						"{{base_url}}"
+					],
+					"path":[
+						"api",
+						"cases",
+						"batch"
+					]
+				},
+				"description": "Retorna el detalle completo estructurado de los procesos usando sus case_ids."
+			},
+			"response":[]
+		}
+	],
+	"event":[
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec":[
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable":[
+		{
+			"key": "base_url",
+			"value": "https://caem-api-mvp.onrender.com/",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "test_key_bancoy_4",
+			"type": "string"
+		}
+	]
+}
