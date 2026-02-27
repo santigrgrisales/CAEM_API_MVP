@@ -23,7 +23,7 @@ export default function Home() {
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
       <div className="panel" style={{ width: '400px', textAlign: 'center' }}>
         <h1 className="h-title" style={{ marginBottom: '8px' }}>Portal Bancario</h1>
-        <p className="h-sub" style={{ marginBottom: '24px' }}>Conecta tu API Key para continuar</p>
+        <p className="h-sub" style={{ marginBottom: '24px' }}>Conecta tu API Key para continuar y Consultar las novedades de los Procesos</p>
         
         <form onSubmit={handleConnect} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <input

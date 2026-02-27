@@ -27,37 +27,36 @@ router.post('/batch', async (req, res) => {
 
     // Map rows -> estructura por categorías solicitada
     const results = rows.map(row => {
-      return {
-        case_id: row.case_id,
-        proceso: {
-          id: row.embargo_id ?? null,
-          numero_oficio: (row.oficio || row.radicado_banco || null),
-          fecha_oficio: row.fecha_oficio ? row.fecha_oficio : null,
-          fecha_recepcion: row.fecha_recepcion ? row.fecha_recepcion : null,
-          titulo_embargo: row.tipo_embargo ?? null,
-          titulo_orden: row.tipo_orden ?? null,
-          monto: toNumberIfPossible(row.monto_embargado),
-          monto_a_embargar: toNumberIfPossible(row.monto_a_embargar)
-        },
-        demandado: {
-          nombre: row.nombre_demandado ?? null,
-          documento: row.id_demandado ?? null,
-          tipo_documento: row.tipo_id_demandado ?? null
-        },
-        demandante: {
-          nombre: row.nombre_demandante ?? null,
-          documento: row.id_demandante ?? null,
-          tipo_documento: row.tipo_id_demandante ?? null
-        },
-        remitente: {
-          nombre: row.entidad_remitente ?? null,
-          direccion: row.direccion_remitente ?? null,
-          correo_electronico: row.correo_remitente ?? null,
-          nombre_personal: row.nombre_remitente ?? null
-        }
-        
-      };
-    });
+  return {
+    case_id: row.case_id,
+    proceso: {
+      id: row.embargo_id ?? null,
+      numero_oficio: row.numero_oficio ?? null,
+      fecha_oficio: row.fecha_oficio ?? null,
+      fecha_recepcion: row.fecha_recepcion ?? null,
+      titulo_embargo: row.titulo_embargo ?? null,
+      titulo_orden: row.titulo_orden ?? null,
+      monto: toNumberIfPossible(row.monto),
+      monto_a_embargar: toNumberIfPossible(row.monto_a_embargar)
+    },
+    demandado: {
+      nombre: row.nombre_demandado ?? null,
+      documento: row.id_demandado ?? null,
+      tipo_documento: row.tipo_id_demandado ?? null
+    },
+    demandante: {
+      nombre: row.nombre_demandante ?? null,
+      documento: row.id_demandante ?? null,
+      tipo_documento: row.tipo_id_demandante ?? null
+    },
+    remitente: {
+      nombre: row.nombre_remitente ?? null,
+      direccion: row.direccion_remitente ?? null,
+      correo_electronico: row.correo_remitente ?? null,
+      nombre_personal: row.nombre_personal_remitente ?? null
+    }
+  };
+});
 
     res.json({ results, not_found });
   } catch (err) {

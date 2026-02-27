@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     if (!bankId) return res.status(401).json({ error: 'Bank not identified' });
 
     // Params with defaults and safety caps
-    const limit = Math.min(parseInt(req.query.limit || '100', 10), 1000);
+    const limit = Math.min(parseInt(req.query.limit || '50000', 10), 50000);
     const offset = Math.max(parseInt(req.query.offset || '0', 10), 0);
     const fecha_desde = req.query.fecha_desde || null;
     const fecha_hasta = req.query.fecha_hasta || null;
