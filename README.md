@@ -1,4 +1,3 @@
-#Aquí tienes el contenido para tu archivo `README.md` perfectamente estructurado en formato Markdown, optimizado para ser profesional, claro y listo para usar.
 
 ---
 
