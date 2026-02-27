@@ -112,7 +112,7 @@
 	"variable":[
 		{
 			"key": "base_url",
-			"value": "https://caem-api-mvp.onrender.com/",
+			"value": "https://caem-api-mvp.onrender.com",
 			"type": "string"
 		},
 		{
