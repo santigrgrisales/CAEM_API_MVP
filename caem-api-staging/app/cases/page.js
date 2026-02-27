@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { apiRequest } from "../../lib/api";
 import { useSearchParams } from "next/navigation";
 
-export default function CasesPage() {
+function CasesContent() {
   const searchParams = useSearchParams();
   const idsParam = searchParams.get("ids");
   const [result, setResult] = useState(null);
@@ -17,8 +17,8 @@ export default function CasesPage() {
 
     apiRequest("/cases/batch", "POST", { case_ids: ids }, apiKey)
       .then(setResult)
-      .catch(err => alert(err.message));
-  }, []);
+      .catch((err) => alert(err.message));
+  }, [idsParam]);
 
   return (
     <div>
@@ -27,5 +27,13 @@ export default function CasesPage() {
         {result ? JSON.stringify(result, null, 2) : "Loading..."}
       </pre>
     </div>
+  );
+}
+
+export default function CasesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CasesContent />
+    </Suspense>
   );
 }
