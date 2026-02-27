@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiRequest } from "../../lib/api";
+import { arrayToCSV, downloadCSV, flattenCaseDetail } from "../../lib/csv";
 import ScreeningTable from "../../components/ScreeningTable";
 import CaseDetailViewer from "../../components/CaseDetailViewer";
 import { useRouter } from "next/navigation";
@@ -77,6 +78,46 @@ export default function ScreeningPage() {
     }
   }
 
+  //Handlers Descargar CSV para ScreeningTable 
+  function handleDownloadAllScreening(dataToExport) {
+    if (!dataToExport || dataToExport.length === 0) {
+      alert("No hay datos para exportar");
+      return;
+    }
+    const csv = arrayToCSV(dataToExport);
+    const timestamp = new Date().toISOString().slice(0, 10);
+    downloadCSV(csv, `screening_export_${timestamp}.csv`);
+  }
+
+  function handleDownloadSelectedScreening() {
+    const selectedData = rows.filter(row => selected.has(String(row.case_id)));
+    if (selectedData.length === 0) {
+      alert("No hay registros seleccionados para exportar");
+      return;
+    }
+    const csv = arrayToCSV(selectedData);
+    const timestamp = new Date().toISOString().slice(0, 10);
+    downloadCSV(csv, `screening_selected_${selectedData.length}_${timestamp}.csv`);
+  }
+
+  // Handler para descargar detalles de casos seleccionados en CaseDetailViewer
+  function handleDownloadAllDetails(results) {
+    if (!results || results.length === 0) {
+      alert("No hay detalles para exportar");
+      return;
+    }
+    
+    // Flatten todos los casos y agregar case_id como primera columna
+    const flattenedResults = results.map(r => {
+      const flattened = flattenCaseDetail(r);
+      return { case_id: r.case_id, ...flattened };
+    });
+    
+    const csv = arrayToCSV(flattenedResults);
+    const timestamp = new Date().toISOString().slice(0, 10);
+    downloadCSV(csv, `cases_details_export_${results.length}_${timestamp}.csv`);
+  }
+
   return (
     <>
       <header className="header">
@@ -94,7 +135,7 @@ export default function ScreeningPage() {
             <span className="small">Seleccionados: <strong>{selected.size}</strong></span>
           </div>
           
-          <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
+          <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap" }}>
             <button className="btn" onClick={consultarSeleccionados} disabled={loading || selected.size === 0}>
               {loading ? "Consultando..." : "Ver Detalles"}
             </button>
@@ -112,6 +153,8 @@ export default function ScreeningPage() {
               onToggle={toggle} 
               onToggleAll={toggleAll} 
               loading={loading}
+              onDownloadAll={handleDownloadAllScreening}
+              onDownloadSelected={handleDownloadSelectedScreening}
             />
           </div>
         </div>
@@ -121,7 +164,10 @@ export default function ScreeningPage() {
           <h3 style={{ margin: 0, marginBottom: "16px", fontSize: "18px" }}>Visor de Detalles</h3>
           <div className="panel-content">
             {detailResults ? (
-              <CaseDetailViewer results={detailResults.results || []} />
+              <CaseDetailViewer 
+                results={detailResults.results || []} 
+                onDownloadAll={handleDownloadAllDetails}
+              />
             ) : (
               <div className="empty">
                 <svg style={{ width: 48, height: 48, margin: "0 auto 12px", opacity: 0.2 }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
