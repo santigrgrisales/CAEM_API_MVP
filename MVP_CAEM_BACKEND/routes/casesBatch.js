@@ -51,6 +51,7 @@ router.post('/batch', async (req, res) => {
     },
     remitente: {
       nombre: row.nombre_remitente ?? null,
+      ciudad: row.ciudad ?? null,
       direccion: row.direccion_remitente ?? null,
       correo_electronico: row.correo_remitente ?? null,
       nombre_personal: row.nombre_personal_remitente ?? null
