@@ -36,7 +36,6 @@ router.post('/batch', async (req, res) => {
       fecha_recepcion: row.fecha_recepcion ?? null,
       titulo_embargo: row.titulo_embargo ?? null,
       titulo_orden: row.titulo_orden ?? null,
-      monto: toNumberIfPossible(row.monto),
       monto_a_embargar: toNumberIfPossible(row.monto_a_embargar)
     },
     demandado: {
