@@ -1,4 +1,72 @@
-# Documentación API - MVP CAEM (Staging)
+# Documentación API 
+
+## Arquitectura de Datos y Modelo de Negocio
+
+Para garantizar que la API ofrezca tiempos de respuesta óptimos (baja latencia) y sea altamente escalable al ser consumida por múltiples entidades bancarias, se diseñó un modelo de datos optimizado basado en procesos de extracción, transformación y carga (ETL).
+
+### 1. Entendimiento del Negocio
+El flujo de la información judicial procesada en esta API obedece a la siguiente lógica del mundo real:
+- Un **Remitente** (Ej. Juzgado o ente coactivo) emite una orden legal.
+- Esta orden es el **Proceso / Embargo**, el cual dicta una medida cautelar (embargo o desembargo).
+- La medida recae sobre los fondos de un **Demandado** (titular de la cuenta).
+- La acción es motivada por una deuda hacia un **Demandante**.
+- El sistema notifica a la **Entidad Bancaria** correspondiente para que aplique la medida.
+
+### 2. Origen de los Datos
+Se extrajo una muestra representativa de aproximadamente **50.000 registros** por tabla desde la base de datos transaccional original. Las tablas relacionales de origen son:
+- `embargos` (Tabla Maestra): Contiene la información del documento legal y los datos del juzgado (Remitente).
+- `demandado` (Tabla Hija): Contiene a quién se le aplica la medida y los montos a retener.
+- `demandante` (Tabla Hija): Contiene quién interpuso la demanda.
+- `banks` (Tabla de Entidades): Creada específicamente para este MVP para gestionar la validación y autenticación (vía `api_key`) de cada banco.
+
+### 3. Modelo Desnormalizado: Tabla `procesos_banco`
+Para evitar que la API realice cruces complejos (`JOINs` entre 4 tablas) en cada petición de los bancos, se implementó una **tabla desnormalizada (plana)** llamada `procesos_banco`. 
+
+La consolidación se realizó mediante un script SQL (`INSERT INTO ... SELECT ...`) cruzando la tabla de embargos estrictamente con el demandado (`JOIN`), y de manera flexible con el demandante (`LEFT JOIN`), dado que en ocasiones el sistema judicial omite temporalmente esta figura.
+
+#### Reglas de Negocio, Limpieza y Control de Calidad
+Durante la migración hacia `procesos_banco` se aplicaron las siguientes validaciones estructurales:
+
+1. **Prevención Estricta de Duplicados (Fingerprint):** 
+   Se implementó un campo `fingerprint` que calcula un hash criptográfico **SHA-256** combinando variables clave: `embargo_id`, `entidad_bancaria_id`, `identificacion` del demandado y el `monto_a_embargar`. La restricción `ON CONFLICT (fingerprint) DO NOTHING` garantiza que la base de datos jamás inserte ni envíe al banco un embargo duplicado.
+
+2. **Filtro de Registros Inactivos (SIN_CONFIRMAR):**
+   > **Nota:** Los registros en estado `SIN_CONFIRMAR` no aparecen en la tabla `procesos_banco`. Esto se debe a que, en la base de datos origen, estos registros se encuentran marcados con la bandera `deleted = TRUE`. Se tomó la decisión arquitectónica de excluirlos de la carga (`WHERE e.deleted = FALSE`) ya que representan una desactivación lógica y no forman parte del universo vigente de procesos accionables para el banco.
+
+3. **Inteligencia de Datos (Manejo de Nulos):**
+   Se utilizó la función `COALESCE(e.oficio, e.radicado_banco)` para asegurar que, si el número de oficio original de la entidad judicial venía vacío, el sistema automáticamente asigne el radicado interno del banco, garantizando la trazabilidad del proceso.
+
+---
+
+### 4. Mapeo de Datos (Data Mapping API 2)
+La respuesta estructurada del endpoint detallado (`POST /api/cases/batch`) reconstruye la información tomando los datos consolidados de `procesos_banco`, los cuales provienen originalmente de:
+
+| Objeto API | Campo en JSON | Tabla Origen | Campo Origen |
+| :--- | :--- | :--- | :--- |
+| **`proceso`** | `id` | `embargos` | `id` |
+| | `numero_oficio` | `embargos` | `oficio` (o `radicado_banco`) |
+| | `fecha_oficio` | `embargos` | `fecha_oficio` |
+| | `fecha_recepcion` | `embargos` | `fecha_recibido` |
+| | `titulo_embargo` | `embargos` | `tipo_embargo` |
+| | `titulo_orden` | `embargos` | `tipo_documento` |
+| | `monto` | `demandado` | `monto_embargado` |
+| | `monto_a_embargar` | `demandado` | `montoaembargar` |
+| **`demandado`** | `nombre` | `demandado` | `nombres` |
+| | `documento` | `demandado` | `identificacion` |
+| | `tipo_documento` | `demandado` | `tipo_identificacion_tipo` |
+| **`demandante`**| `nombre` | `demandante` | `nombres` |
+| | `documento` | `demandante` | `identificacion` |
+| | `tipo_documento` | `demandante` | `tipo_identificacion_tipo` |
+| **`remitente`** | `nombre` | `embargos` | `entidad_remitente` |
+| | `direccion` | `embargos` | `direccion` |
+| | `correo_electronico` | `embargos` | `correo` |
+| | `nombre_personal` | `embargos` | `funcionario` |
+
+
+
+
+
+# MVP CAEM (Staging)
 
 ## Visión General
 La API MVP permite a las entidades bancarias consultar y gestionar de forma automatizada y segura los oficios judiciales (embargos, desembargos) dirigidos a ellos. 
