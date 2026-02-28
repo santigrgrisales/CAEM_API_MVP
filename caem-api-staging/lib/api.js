@@ -32,7 +32,7 @@ export async function apiRequest(path, method = "GET", body = null, apiKey) {
       if (json?.error) errorMessage = json.error;
     } catch (_) {}
 
-    const err = new Error(errorMessage || "API error");
+    const err = new Error(errorMessage || "En este momento no se pueden ver a detalle más de 500 registros");
     err.status = res.status;
     throw err;
   }
