@@ -10,15 +10,25 @@ La aplicación frontend CAEM es una plataforma Next.js que permite a entidades b
 - Diseño responsive para desktop y móvil
 - Exportación de datos a formato CSV
 
+
 ## Características Principales
 
 - Autenticación mediante API keys
 - Dos vistas principales:
   - Dashboard de screening con todos los casos
-  - Vista detallada con información completa de embargos
+  - Vista detallada con información completa y filtrada de embargos
 - Consulta de datos en tiempo real desde el backend
 - Opciones de filtrado y búsqueda
 - Exportación de datos a CSV
+- **Selector de campos visibles**: Permite elegir qué campos mostrar en el visor de detalles, integrando el parámetro `fields` en la consulta al backend.
+
+### Flujo de selección de campos visibles
+
+1. El usuario puede abrir el panel "Seleccionar campos visibles" en el visor de detalles.
+2. Los campos actualmente seleccionados aparecen marcados.
+3. Al guardar la selección, el visor recarga los expedientes mostrando solo los campos elegidos.
+4. El frontend envía el parámetro `fields` en la consulta POST `/api/cases/batch?fields=...`.
+5. Si no se selecciona ningún campo, se muestran todos por defecto.
 
 ### Exportación CSV
 

@@ -74,7 +74,7 @@
 					"raw": "{\n  \"case_ids\":[\n    \"4f67b712-96a7-4611-9bc2-e8b6f1c69fd5\",\n    \"58f7fe3c-d736-4d97-9999-911d33cebe25\"\n  ]\n}"
 				},
 				"url": {
-					"raw": "{{base_url}}/api/cases/batch",
+					"raw": "{{base_url}}/api/cases/batch?fields=proceso.id,demandado.nombre,remitente.ciudad",
 					"host": [
 						"{{base_url}}"
 					],
@@ -84,7 +84,7 @@
 						"batch"
 					]
 				},
-				"description": "Retorna el detalle completo estructurado de los procesos usando sus case_ids."
+				"description": "Retorna el detalle completo estructurado de los procesos usando sus case_ids. Permite filtrar campos usando el parámetro 'fields' en el query string. Ejemplo: fields=proceso.id,demandado.nombre,remitente.ciudad"
 			},
 			"response":[]
 		}

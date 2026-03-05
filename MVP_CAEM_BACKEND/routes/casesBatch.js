@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { getCasesByIdsForBank, MAX_BATCH } = require('../services/casesService');
+const { parseFieldsParameter, filterCaseDetail } = require('../utils/fieldFilter');
 
 function toNumberIfPossible(v) {
   if (v === null || v === undefined) return null;
@@ -10,23 +11,10 @@ function toNumberIfPossible(v) {
   return Number.isNaN(n) ? v : n;
 }
 
-router.post('/batch', async (req, res) => {
-  try {
-    const bankId = req.bank && req.bank.id;
-    if (!bankId) return res.status(401).json({ error: 'Bank not identified' });
-
-    const { case_ids } = req.body;
-    if (!Array.isArray(case_ids) || case_ids.length === 0) {
-      return res.status(400).json({ error: 'case_ids must be a non-empty array' });
-    }
-    if (case_ids.length > MAX_BATCH) {
-      return res.status(400).json({ error: `Too many case_ids. Max ${MAX_BATCH}` });
-    }
-
-    const { rows, not_found } = await getCasesByIdsForBank(bankId, case_ids);
-
-    // Map rows -> estructura por categorías solicitada
-    const results = rows.map(row => {
+/**
+ * Transform database row to structured case detail response
+ */
+function rowToCaseDetail(row) {
   return {
     case_id: row.case_id,
     proceso: {
@@ -56,7 +44,33 @@ router.post('/batch', async (req, res) => {
       nombre_personal: row.nombre_personal_remitente ?? null
     }
   };
-});
+}
+
+router.post('/batch', async (req, res) => {
+  try {
+    const bankId = req.bank && req.bank.id;
+    if (!bankId) return res.status(401).json({ error: 'Bank not identified' });
+
+    const { case_ids } = req.body;
+    if (!Array.isArray(case_ids) || case_ids.length === 0) {
+      return res.status(400).json({ error: 'case_ids must be a non-empty array' });
+    }
+    if (case_ids.length > MAX_BATCH) {
+      return res.status(400).json({ error: `Too many case_ids. Max ${MAX_BATCH}` });
+    }
+
+    // Parse the fields query parameter (e.g., "proceso.numero_oficio,demandado.nombre")
+    const fieldsParam = req.query.fields;
+    const fieldMap = parseFieldsParameter(fieldsParam);
+
+    const { rows, not_found } = await getCasesByIdsForBank(bankId, case_ids);
+
+    // Map rows -> estructura por categorías solicitada
+    const results = rows.map(row => {
+      const caseDetail = rowToCaseDetail(row);
+      // Apply field filtering if fields parameter was provided
+      return fieldMap ? filterCaseDetail(caseDetail, fieldMap) : caseDetail;
+    });
 
     res.json({ results, not_found });
   } catch (err) {

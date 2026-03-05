@@ -91,13 +91,25 @@ Todas las peticiones deben incluir el siguiente Header:
 ]
 ```
 
-### 2️⃣ Consulta Detallada (Batch)
-`POST /api/cases/batch`
 
-Permite obtener el detalle completo de hasta **500 IDs** por petición.
+### 23 Consulta Detallada (Batch)
+`POST /api/cases/batch?fields=<campos>`
+
+Permite obtener el detalle completo de hasta **500 IDs** por petición. Ahora soporta filtrado dinámico de campos mediante el parámetro `fields` en el query string.
 
 **Cuerpo de la petición (Body):**
 ```json
+{
+  "case_ids": ["uuid1", "uuid2"]
+}
+```
+
+**Parámetro de filtrado de campos (opcional):**
+`fields=proceso.id,proceso.numero_oficio,demandado.nombre,demandante.nombre,remitente.nombre,remitente.ciudad`
+
+**Ejemplo de petición:**
+```
+POST /api/cases/batch?fields=proceso.id,demandado.nombre,remitente.ciudad
 {
   "case_ids": ["uuid1", "uuid2"]
 }
@@ -111,29 +123,13 @@ Permite obtener el detalle completo de hasta **500 IDs** por petición.
       "case_id": "uuid",
       "proceso": {
         "id": "23050300006",
-        "numero_oficio": "NR0118",
-        "fecha_oficio": "2023-04-27T05:00:00.000Z",
-        "fecha_recepcion": "2023-05-02T05:00:00.000Z",
-        "titulo_embargo": "JUDICIAL",
-        "titulo_orden": "EMBARGO",
-        "monto_a_embargar": 32604867
+        "numero_oficio": "NR0118"
       },
       "demandado": {
-        "nombre": "JUAN PEREZ",
-        "documento": "22789966",
-        "tipo_documento": "CEDULA"
-      },
-      "demandante": {
-        "nombre": "BANCO NACIONAL",
-        "documento": "8600073354",
-        "tipo_documento": "NIT"
+        "nombre": "JUAN PEREZ"
       },
       "remitente": {
-        "nombre": "JUZGADO 01 CIVIL",
-        "ciudad": "CARTAGENA",
-        "direccion": "Av. Principal 123",
-        "correo_electronico": "j01ct@ramajudicial.gov.co",
-        "nombre_personal": "DR. RAMIRO SUAREZ"
+        "ciudad": "CARTAGENA"
       }
     }
   ],
